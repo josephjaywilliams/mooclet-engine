@@ -14,3 +14,4 @@ pycurl==7.43.0 --install-option="--with-nss"
 django-celery-results
 #django-celery-beat
 scipy==1.1.0
+drf-writable-nested==0.5.1
