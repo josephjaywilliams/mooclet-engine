@@ -13,6 +13,7 @@ import datetime
 import numpy as np
 from scipy.stats import invgamma
 from django.forms.models import model_to_dict
+import re
 # arguments to policies:
 
 # variables: list of variable objects, can be used to retrieve related data
@@ -282,6 +283,61 @@ def sample_without_replacement2(variables, context):
 
 
 	return version
+
+def if_then_rules(variables, context):
+	Variable = apps.get_model('engine', 'Variable')
+	Value = apps.get_model('engine', 'Value')
+	Version = apps.get_model('engine', 'Version')
+
+	policy_parameters = context['policy_parameters']
+	parameters = policy_parameters.parameters
+
+	for case in parameters:
+		print(case)
+		if case != "else":
+			logical_statement = parameters[case]['logical_statement']
+			print(logical_statement)
+			replace_variables = re.findall('\{[\w ]+\}', logical_statement)
+			print(replace_variables)
+			var_dict = {}
+			print(context['learner'].name)
+			for variable in replace_variables:
+				variable_name = variable.strip('{}')
+				print(variable_name)
+				#var_db = Variable.objects.get(name=variable)
+				#should we always get the first? In practice this means most recently added
+				val = Value.objects.filter(variable__name=variable_name, learner=context['learner']).first()
+				if val:
+					var_dict[variable_name] = val.value
+				else:
+					var_dict[variable_name] = None
+			logical_converted = logical_statement.format(**var_dict)
+			print(logical_converted)
+			truth = None
+			try:
+				truth = eval(logical_converted)
+			except:
+				pass #what should we do in this case (evaluation of statement fails)?
+			if truth:
+				print(case)
+				weights = parameters[case]['probability_distribution']
+				version_name = choice(weights.keys(), p=weights.values())
+				version = Version.objects.get(name=version_name, mooclet=context['mooclet'])
+				return version
+			else:
+				pass
+	if 'else' in parameters:
+		weights = parameters['else']
+		version_name = choice(weights.keys(), p=weights.values())
+		version = Version.objects.get(name=version_name)
+		return version
+	else:
+		version_set = Version.objects.filter(mooclet=context['mooclet']).order_by('name')
+		return version_set.first()
+		#what do we do if all cases fail and no else? uniform random w/ a notation?
+
+
+			
 
 
 # Draw thompson sample of (reg. coeff., variance) and also select the optimal action

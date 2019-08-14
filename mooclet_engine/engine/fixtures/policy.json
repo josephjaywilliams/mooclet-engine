@@ -57,5 +57,13 @@
       "name": "weighted_random_time",
       "policy_id": 9
     }
+  },
+    {
+    "model": "engine.policy",
+    "pk": 10,
+    "fields": {
+      "name": "if_then_rules",
+      "policy_id": 10
+    }
   }
 ]  
