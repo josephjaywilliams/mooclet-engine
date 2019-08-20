@@ -65,5 +65,13 @@
       "name": "if_then_rules",
       "policy_id": 10
     }
+  },
+      {
+    "model": "engine.policy",
+    "pk": 11,
+    "fields": {
+      "name": "if_then_rules_time",
+      "policy_id": 11
+    }
   }
 ]  

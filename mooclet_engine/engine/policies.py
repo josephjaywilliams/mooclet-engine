@@ -337,7 +337,15 @@ def if_then_rules(variables, context):
 		#what do we do if all cases fail and no else? uniform random w/ a notation?
 
 
-			
+def if_then_rules_time(variables, context):
+	version = if_then_rules(variables, context)
+	version_dict = model_to_dict(version)
+	if version_dict['text'] != '':
+		dtnow = datetime.date.today()
+		dtiso = dtnow.isoformat()
+		version_dict['text'] = dtiso + ' ' + version_dict['text'] 
+	return version_dict
+
 
 
 # Draw thompson sample of (reg. coeff., variance) and also select the optimal action
