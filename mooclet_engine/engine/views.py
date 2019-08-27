@@ -32,6 +32,10 @@ class MoocletViewSet(viewsets.ModelViewSet):
     @detail_route()
     def test(self, request, pk=None):
         return Response({'test':'hi'})
+    
+# This is what assigns MOOClet versions when a request is made from a Learner Interface to assign 
+# a MOOClet version, such as simple vs complex explanations in the front-end Learner Interface
+# of Qualtrics/Canvas. Look at URL tiny.cc/moocletapi for the API endpoints.
 
     @detail_route()
     def run(self, request, pk=None):
